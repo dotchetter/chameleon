@@ -78,17 +78,16 @@ function getSunSetSunRiseDataFromPublicApi($locationData)
     {
         $err = $null
         $response = Invoke-WebRequest $request -ErrorVariable err
+        $results = $response | ConvertFrom-Json | Select-Object results -ExpandProperty results
     }
     catch [Exception]
     {
         Write-Warning "[Chameleon] Chameleon could not connect to the server.`nErrormessage: $err"
         exit
     }        
-
-    $timeinfo = $response.Content | ConvertFrom-Json | Select-Object results
     
     Write-Host "done." -ForeGroundColor Green
-    return $timeInfo
+    return $results
 }
 
 
@@ -96,7 +95,7 @@ function evaluateBrightOrDarkmode($sundata)
 {
     $now = Get-Date
 
-    if ($now -gt $sundata.sunset)
+    if ($now -ge $sundata.sunset)
     {
         return "dark"
     }
@@ -117,8 +116,8 @@ function main()
     $sundata = getSunSetSunRiseDataFromPublicApi $location
     $previousCheck = Get-Date
     $sundataUpdatedTimestamp = Get-Date
-    $currentLightTheme = -1
-    $colorValue
+    $previousValue = -1
+    $colorValue = -1
     
     while (1)
     {
@@ -129,23 +128,23 @@ function main()
         }
 
 
-        if ($currentLightTheme -ne $colorValue)
+        switch (evaluateBrightOrDarkmode)
         {
-            switch (evaluateBrightOrDarkmode)
-            {
-                "dark"
-                {
-                    Write-Host "[Chameleon] It's past sunset - setting dark mode" -ForeGroundColor Yellow
-                    $colorValue = 0
-                }
-                "light"
-                {
-                    Write-Host "[Chameleon] The sun is up - setting bright mode" -ForeGroundColor Yellow
-                    $colorValue = 1
-                }
+            "dark"
+            {                
+                $colorValue = 0
             }
+            "light"
+            {
+                $colorValue = 1
+            }
+        }
+     
+        if ($previousValue -ne $colorValue)
+        {
+            Write-host "[Chameleon] Switching mode" -ForeGroundColor Yellow
             setRegistryValues $colorValue
-            $currentLightTheme = $colorValue
+            $previousValue = $colorValue
         }
 
         Start-Sleep -Seconds ($INTERVAL_MINUTES * 60)
@@ -160,6 +159,6 @@ Write-Host ("`nChameleon - Open source light / dark theme
             `rfrom light to dark theme according to the sunset and
             `rsunrise at your location. 
             `rThe interval is set to $INTERVAL_MINUTES minute(s).
-            `r`n`n")
+            `r")
 
 main
