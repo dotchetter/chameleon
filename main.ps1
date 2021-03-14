@@ -25,7 +25,7 @@ function getLocationFromWindows10LocationApi()
     Windows 10 API, if enabled.
 #>
 {    
-    Write-Host "[Chameleon] Verifying location data access: " -NoNewLine -ForeGroundColor Yellow
+    Write-Host "[Chameleon] Verifying location data access: " -NoNewLine -ForeGroundColor Cyan
     
     $GeoWatcher = New-Object System.Device.Location.GeoCoordinateWatcher
     $GeoWatcher.Start()
@@ -35,7 +35,7 @@ function getLocationFromWindows10LocationApi()
         Start-Sleep -Milliseconds 100 
     }
     
-    Write-Host "done." -ForeGroundColor Green
+    Write-Host "done" -ForeGroundColor Green
     
     while ($GeoWatcher.Permission -ne 'Granted')
     {
@@ -68,7 +68,7 @@ function getSunSetSunRiseDataFromPublicApi($locationData)
     latitude and longitude. 
 #>
 {
-    Write-Host "[Chameleon] Obtaining sunrise and sunset data from API: " -NoNewLine -ForeGroundColor Yellow
+    Write-Host "[Chameleon] Obtaining sunrise and sunset data from API: " -NoNewLine -ForeGroundColor Cyan
     $long = $locationData.Longitude
     $lat = $locationData.Latitude
 
@@ -86,20 +86,32 @@ function getSunSetSunRiseDataFromPublicApi($locationData)
         exit
     }        
     
-    Write-Host "done." -ForeGroundColor Green
+    Write-Host "done" -ForeGroundColor Green
     return $results
 }
 
 
 function evaluateBrightOrDarkmode($sundata)
+<#
+    Evealuates whether the current time of 
+    call is during sun up or sun down, and
+    returns 'dark' or 'light' depending on 
+    the outcome.
+#>
 {
     $now = Get-Date
 
-    if ($now -ge $sundata.sunset)
+    switch ($now -gt  [Datetime]::Parse($sundata.sunrise) -and $now -lt [Datetime]::Parse($sundata.sunset))
     {
-        return "dark"
+        $true
+        {
+            return  "light"
+        }
+        $false
+        {
+            return "dark"
+        }
     }
-    return "light"
 }
 
 
@@ -118,17 +130,18 @@ function main()
     $sundataUpdatedTimestamp = Get-Date
     $previousValue = -1
     $colorValue = -1
-    
+
+    Write-Host "[Chameleon] The sun rises at" $sundata.sunrise "and sets at" $sundata.sunset "at current location`n`n" -ForeGroundColor Cyan
     while (1)
     {
-        if (($sundataUpdatedTimestamp - (Get-Date)).Days -ge 1)
+        if (((Get-Date) - $sundataUpdatedTimestamp).days)
         {
             $location = getLocationFromWindows10LocationApi
             $sundata = getSunSetSunRiseDataFromPublicApi $location
         }
 
 
-        switch (evaluateBrightOrDarkmode)
+        switch (evaluateBrightOrDarkmode $sundata)
         {
             "dark"
             {                
@@ -142,7 +155,8 @@ function main()
      
         if ($previousValue -ne $colorValue)
         {
-            Write-host "[Chameleon] Switching mode" -ForeGroundColor Yellow
+            $modes = @{0 = "dark mode"; 1 = "light mode"}
+            Write-host "[Chameleon] Switching mode to" $modes.Item($colorValue) -ForeGroundColor Yellow
             setRegistryValues $colorValue
             $previousValue = $colorValue
         }
