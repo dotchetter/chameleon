@@ -11,7 +11,7 @@ Either you let Chameleon do the switching, or you can quick toggle between dark 
 on the Chameleon icon in your taskbar. 
 
 ### Installation
-* Download the latest release here: https://github.com/dotchetter/chameleon/releases
+* Download the latest release here: ![Chameleon 1.0.0](https://github.com/dotchetter/chameleon/releases/download/1.0.0/chameleon.zip)
 * Double klick **Chameleon.exe**
 * **Note:** Chameleon.exe **must** reside in it's original folder to work - either that, or move the associated .ps1 files along.
 
