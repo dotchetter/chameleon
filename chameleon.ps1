@@ -21,9 +21,9 @@ Import-Module .\settings.ps1
 [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
 [System.Reflection.Assembly]::LoadWithPartialName('System.Drawing') | Out-Null
 
-$script:sunEnabled = 1
-$script:appsEnabled = 1
-$script:systemEnabled = 1
+$script:sunEnabled = $true
+$script:appsEnabled = $true
+$script:systemEnabled = $true
 $script:selectedTheme = [Themes]::sun
 
 $location = getLocationFromWindows10LocationApi

@@ -9,7 +9,7 @@ function initSettingsWindow()
     #useDarkRb click event
     $script:useDarkRb = $script:settingsWindow.FindName("useDarkRb")
     $script:useDarkRb.Add_Click( {
-        $script:sunEnabled = 0
+        $script:sunEnabled = $false
         getTheme | setTheme
         $script:selectedTheme = [Themes]::dark
     })
@@ -17,7 +17,7 @@ function initSettingsWindow()
     #useLightRb click event
     $script:useLightRb = $script:settingsWindow.FindName("useLightRb")
     $script:useLightRb.Add_Click( {
-        $script:sunEnabled = 0
+        $script:sunEnabled = $false
         getTheme | setTheme
         $script:selectedTheme = [Themes]::light
 
@@ -26,7 +26,7 @@ function initSettingsWindow()
     #sunRb click event
     $script:sunRb = $script:settingsWindow.FindName("sunRb")
     $script:sunRb.Add_Click( {
-        $script:sunEnabled = 1
+        $script:sunEnabled = $true
         [Themes]::sun | setTheme
         $script:selectedTheme = [Themes]::sun
     })
