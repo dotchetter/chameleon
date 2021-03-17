@@ -59,13 +59,15 @@ $chameleonDaemon = Start-Job -FilePath chameleond.ps1
 
 $light_mode_toggle.add_Click(
     {
-        setRegistryValues 1
+        $script:sunEnabled = 0
+        setTheme [Themes].light
     }
 )
 
 $dark_mode_toggle.add_Click(
     {
-        setRegistryValues 0
+        $script:sunEnabled = 0
+        setTheme [Themes].dark
     }
 )
 

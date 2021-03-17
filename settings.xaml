@@ -1,0 +1,12 @@
+<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="Window">
+    <StackPanel x:Name = "RootContainer">
+        <RadioButton x:Name = "useDarkRb" Content = "Always use dark theme"/>
+        <RadioButton x:Name = "useLightRb" Content = "Always use light theme"/>
+        <RadioButton x:Name = "sunRb" Content = "Let sun decide" IsChecked = "True"/>
+        <CheckBox x:Name = "appsCb" Content="Changes apply to apps" IsChecked = "True"/>
+        <CheckBox x:Name = "systemCb" Content="Changes apply to system" IsChecked = "True"/>
+    </StackPanel>    
+</Window>

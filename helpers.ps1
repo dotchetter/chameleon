@@ -16,7 +16,7 @@
 #>
 
 $INTERVAL_MINUTES = 1
-
+enum Themes { light; dark; sun }
 Add-Type -AssemblyName System.Device
 
 function getLocationFromWindows10LocationApi()
@@ -93,14 +93,31 @@ function evaluateBrightOrDarkmode($sundata)
 
     switch ($now -gt  [Datetime]::Parse($sundata.sunrise) -and $now -lt [Datetime]::Parse($sundata.sunset))
     {
-        $true { return 1 } # Light
-        $false { return 0 } # Dark
+        $true { return [Themes]::light }
+        $false { return [Themes]::dark}
     }
 }
 
+$script:appsEnabled = 1
+$script:systemEnabled = 1
+$script:sunEnabled = 1
 
-function setRegistryValues($value)
+function setTheme()
 {
-    New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value $value -Type Dword -Force | Out-Null  
-    New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $value -Type Dword -Force | Out-Null 
+    param (
+    [parameter(ValueFromPipeline)]
+    [Themes]
+    $theme
+    )
+    if (($theme -ne [Themes]::sun) -or $sunEnabled)
+    {
+        $effectiveTheme = $theme -eq [Themes]::sun ? $script:sunTheme : $theme
+        $regValue = $effectiveTheme -eq [Themes]::light ? 1 : 0
+        if ($systemEnabled) {
+            New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value $regValue -Type Dword -Force | Out-Null  
+        }
+        if ($appsEnabled) {
+            New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $regValue -Type Dword -Force | Out-Null 
+        }
+    }
 }

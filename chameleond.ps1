@@ -20,8 +20,6 @@ $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
 $previousCheck = Get-Date
 $sundataUpdatedTimestamp = Get-Date
-$previousValue = -1
-$colorValue = -1
 
 while (1)
 {
@@ -31,12 +29,12 @@ while (1)
         $sundata = getSunSetSunRiseDataFromPublicApi $location
     }
 
-    $colorValue = evaluateBrightOrDarkmode $sundata
+    $script:sunTheme = evaluateBrightOrDarkmode $sundata
 
-    if ($previousValue -ne $colorValue)
+    if ($previousTheme -ne $script:sunTheme)
     {
-        setRegistryValues $colorValue
-        $previousValue = $colorValue
+        [Themes]::sun | setTheme
+        $previousTheme = $script:sunTheme
     }
 
     Start-Sleep -Seconds ($INTERVAL_MINUTES * 60)
