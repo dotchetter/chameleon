@@ -1,45 +1,46 @@
 Import-Module .\helpers.ps1
-Add-Type -AssemblyName PresentationFramework
+function initSettingsWindow()
+{
+    #Create window
+    [xml]$xaml = Get-Content ".\settings.xaml"
+    $reader = (New-Object System.Xml.XmlNodeReader $xaml)
+    $script:settingsWindow = [Windows.Markup.XamlReader]::Load($reader)
 
-#Create window
-[xml]$xaml = Get-Content ".\settings.xaml"
-$reader = (New-Object System.Xml.XmlNodeReader $xaml)
-$window = [Windows.Markup.XamlReader]::Load($reader)
+    #useDarkRb click event
+    $script:useDarkRb = $script:settingsWindow.FindName("useDarkRb")
+    $script:useDarkRb.Add_Click( {
+        $script:sunEnabled = 0
+        getTheme | setTheme
+    })
 
-#useDarkRb click event
-$useDarkRb = $window.FindName("useDarkRb")
-$useDarkRb.Add_Click({
-    $script:sunEnabled = 0
-    getTheme | setTheme
-})
+    #useLightRb click event
+    $script:useLightRb = $script:settingsWindow.FindName("useLightRb")
+    $script:useLightRb.Add_Click( {
+        $script:sunEnabled = 0
+        getTheme | setTheme
+    })
 
-#useLightRb click event
-$useLightRb = $window.FindName("useLightRb")
-$useLightRb.Add_Click({
-    $script:sunEnabled
-    getTheme | setTheme
-})
+    #sunRb click event
+    $script:sunRb = $script:settingsWindow.FindName("sunRb")
+    $script:sunRb.Add_Click( {
+        $script:sunEnabled = 1
+        [Themes]::sun | setTheme
+    })
 
-#sunRb click event
-$sunRb = $window.FindName("sunRb")
-$sunRb.Add_Click({
-    $script:sunEnabled
-})
+    #appsCb click events
+    $script:appsCb = $script:settingsWindow.FindName("appsCb")
+    $script:appsCb.Add_Click( {
+        $script:appsEnabled = $script:appsCb.IsChecked
+        getTheme | setTheme
+    })
 
-#appsCb checked/unchecked events
-$appsCb = $window.FindName("appsCb")
-$appsCb.Add_Click({
-    $script:appsEnabled = $appsCb.IsChecked
-    getTheme | setTheme
-})
-
-#systemCb checked/unchecked events
-$systemCb = $window.FindName("systemCb")
-$systemCb.Add_Click({
-    $script:systemEnabled = $systemCb.IsChecked
-    getTheme | setTheme
-})
-
+    #systemCb click events
+    $script:systemCb = $script:settingsWindow.FindName("systemCb")
+    $script:systemCb.Add_Click( {
+        $script:systemEnabled = $script:systemCb.IsChecked
+        getTheme | setTheme
+    })
+}
 function getTheme()
 {
     if ($sunRb.IsChecked) {
@@ -55,6 +56,4 @@ function getTheme()
     }
     return $theme
 }
-
-$window.ShowDialog()
 

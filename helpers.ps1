@@ -98,10 +98,6 @@ function evaluateBrightOrDarkmode($sundata)
     }
 }
 
-$script:appsEnabled = 1
-$script:systemEnabled = 1
-$script:sunEnabled = 1
-
 function setTheme()
 {
     param (
@@ -109,6 +105,9 @@ function setTheme()
     [Themes]
     $theme
     )
+    if ($null -eq $theme) {
+        return
+    }
     if (($theme -ne [Themes]::sun) -or $sunEnabled)
     {
         if ($theme -eq [Themes]::sun) {
