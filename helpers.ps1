@@ -114,12 +114,9 @@ function setTheme()
     if (($theme -ne [Themes]::sun) -or $sunEnabled)
     {
         if ($theme -eq [Themes]::sun) {
-            $effectiveTheme =  $script:sunTheme
+            $theme =  $script:sunTheme
         }
-        else {
-            $effectiveTheme = $theme
-        }
-        if ($effectiveTheme -eq [Themes]::light) {
+        if ($theme -eq [Themes]::light) {
             $regValue = 1
         }
         else {
