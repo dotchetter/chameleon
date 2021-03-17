@@ -111,8 +111,18 @@ function setTheme()
     )
     if (($theme -ne [Themes]::sun) -or $sunEnabled)
     {
-        $effectiveTheme = $theme -eq [Themes]::sun ? $script:sunTheme : $theme
-        $regValue = $effectiveTheme -eq [Themes]::light ? 1 : 0
+        if ($theme -eq [Themes]::sun) {
+            $effectiveTheme =  $script:sunTheme
+        }
+        else {
+            $effectiveTheme = $theme
+        }
+        if ($effectiveTheme -eq [Themes]::light) {
+            $regValue = 1
+        }
+        else {
+            $regValue = 0
+        }
         if ($systemEnabled) {
             New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value $regValue -Type Dword -Force | Out-Null  
         }

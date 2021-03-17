@@ -46,7 +46,12 @@ function getTheme()
         $theme = [Themes]::sun
     }
     else {
-        $theme = $useDarkRb.IsChecked ? [Themes]::dark : [Themes]::light
+        if ($useDarkRb.IsChecked) {
+            $theme =  [Themes]::dark
+         }
+         else{
+             $theme = [Themes]::light
+         }
     }
     return $theme
 }
