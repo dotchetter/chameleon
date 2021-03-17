@@ -1,3 +1,22 @@
+
+<#
+    Chameleon - An automated bright / dark mode toggle
+    service that follows the sun.
+
+    Authors:
+        Simon Olofsson
+        dotchetter@protonmail.ch
+        https://github.com/dotchetter
+        
+        Michael Hällström
+        https://github.com/yousernaym
+
+    Date:
+        2021-03-17
+   
+    Logic for settings dialog window
+#>
+
 Import-Module .\helpers.ps1
 function initSettingsWindow()
 {

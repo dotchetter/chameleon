@@ -1,3 +1,19 @@
+<!--Chameleon - An automated bright / dark mode toggle
+    service that follows the sun.
+
+    Authors:
+        Simon Olofsson
+        dotchetter@protonmail.ch
+        https://github.com/dotchetter
+        
+        Michael Hällström
+        https://github.com/yousernaym
+
+    Date:
+        2021-03-17
+   
+    Design for settings dialog window -->
+
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

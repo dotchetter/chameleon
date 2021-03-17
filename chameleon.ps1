@@ -3,13 +3,16 @@
     Chameleon - An automated bright / dark mode toggle
     service that follows the sun.
 
-    Author:
+    Authors:
         Simon Olofsson
         dotchetter@protonmail.ch
         https://github.com/dotchetter
 
+        Michael Hällström
+        https://github.com/yousernaym
+
     Date:
-        2021-03-07
+        2021-03-17
     
     Tray icon and main service file
 #>
