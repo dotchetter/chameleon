@@ -29,6 +29,11 @@ $script:appsEnabled = $true
 $script:systemEnabled = $true
 $script:selectedTheme = [Themes]::sun
 
+# GUI test
+# initSettingsWindow
+# $script:settingsWindow.ShowDialog()
+# Stop-Process $pid
+
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
 

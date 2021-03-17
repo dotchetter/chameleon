@@ -17,12 +17,28 @@
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    x:Name="Window">
-    <StackPanel x:Name = "RootContainer">
-        <RadioButton x:Name = "useDarkRb" Content = "Always use dark theme"/>
-        <RadioButton x:Name = "useLightRb" Content = "Always use light theme"/>
-        <RadioButton x:Name = "sunRb" Content = "Let sun decide" IsChecked = "True"/>
-        <CheckBox x:Name = "appsCb" Content="Changes apply to apps" IsChecked = "True"/>
-        <CheckBox x:Name = "systemCb" Content="Changes apply to system" IsChecked = "True"/>
-    </StackPanel>    
+    x:Name="Window"
+    SizeToContent="WidthAndHeight"
+    ResizeMode="NoResize"
+    Title = "Chameleon settings"
+    >
+    <Window.Resources>
+        <Style x:Key="ControlBaseStyle" TargetType="{x:Type Control}">
+            <Setter Property="Margin" Value="1"/>
+        </Style>
+        <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource ControlBaseStyle}"/>
+        <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource ControlBaseStyle}"/>
+    </Window.Resources>
+    
+    <StackPanel Orientation = "Horizontal">
+        <StackPanel Margin="10">
+            <RadioButton x:Name = "useDarkRb" Content = "Always use dark theme"/>
+            <RadioButton x:Name = "useLightRb" Content = "Always use light theme"/>
+            <RadioButton x:Name = "sunRb" Content = "Let sun decide" IsChecked = "True"/>
+        </StackPanel>
+        <StackPanel Margin = "10">
+            <CheckBox x:Name="appsCb" Content="Changes apply to apps" IsChecked="True"/>
+            <CheckBox x:Name="systemCb" Content="Changes apply to system" IsChecked="True"/>
+        </StackPanel>
+    </StackPanel>
 </Window>
