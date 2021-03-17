@@ -24,6 +24,7 @@ Import-Module .\settings.ps1
 $script:sunEnabled = 1
 $script:appsEnabled = 1
 $script:systemEnabled = 1
+$script:selectedTheme = [Themes]::sun
 
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
