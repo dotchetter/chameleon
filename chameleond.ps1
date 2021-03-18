@@ -3,14 +3,17 @@
     Chameleon - An automated bright / dark mode toggle
     service that follows the sun.
 
-    Author:
+    Authors:
         Simon Olofsson
         dotchetter@protonmail.ch
         https://github.com/dotchetter
 
-    Date:
-        2021-03-07
+        Michael Hällström
+        https://github.com/yousernaym
 
+    Date:
+        2021-03-17
+   
     Backend logic file, invoked as daemon by chameleond
 
 #>
@@ -20,8 +23,6 @@ $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
 $previousCheck = Get-Date
 $sundataUpdatedTimestamp = Get-Date
-$previousValue = -1
-$colorValue = -1
 
 while (1)
 {
@@ -31,12 +32,12 @@ while (1)
         $sundata = getSunSetSunRiseDataFromPublicApi $location
     }
 
-    $colorValue = evaluateBrightOrDarkmode $sundata
+    $script:sunTheme = evaluateBrightOrDarkmode $sundata
 
-    if ($previousValue -ne $colorValue)
+    if ($previousTheme -ne $script:sunTheme)
     {
-        setRegistryValues $colorValue
-        $previousValue = $colorValue
+        [Themes]::sun | setTheme
+        $previousTheme = $script:sunTheme
     }
 
     Start-Sleep -Seconds ($INTERVAL_MINUTES * 60)

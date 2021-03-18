@@ -3,20 +3,23 @@
     Chameleon - An automated bright / dark mode toggle
     service that follows the sun.
 
-    Author:
+    Authors:
         Simon Olofsson
         dotchetter@protonmail.ch
         https://github.com/dotchetter
 
-    Date:
-        2021-03-07
+        Michael Hällström
+        https://github.com/yousernaym
 
+    Date:
+        2021-03-17
+   
     Functions used for core functionalities in Chameleon
 
 #>
 
 $INTERVAL_MINUTES = 1
-
+enum Themes { light; dark; sun }
 Add-Type -AssemblyName System.Device
 
 function getLocationFromWindows10LocationApi()
@@ -93,14 +96,37 @@ function evaluateBrightOrDarkmode($sundata)
 
     switch ($now -gt  [Datetime]::Parse($sundata.sunrise) -and $now -lt [Datetime]::Parse($sundata.sunset))
     {
-        $true { return 1 } # Light
-        $false { return 0 } # Dark
+        $true { return [Themes]::light }
+        $false { return [Themes]::dark}
     }
 }
 
-
-function setRegistryValues($value)
+function setTheme()
 {
-    New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value $value -Type Dword -Force | Out-Null  
-    New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $value -Type Dword -Force | Out-Null 
+    param (
+    [parameter(ValueFromPipeline)]
+    [Themes]
+    $theme
+    )
+    if ($null -eq $theme) {
+        return
+    }
+    if (($theme -ne [Themes]::sun) -or $sunEnabled)
+    {
+        if ($theme -eq [Themes]::sun) {
+            $theme =  $script:sunTheme
+        }
+        if ($theme -eq [Themes]::light) {
+            $regValue = 1
+        }
+        else {
+            $regValue = 0
+        }
+        if ($systemEnabled) {
+            New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value $regValue -Type Dword -Force | Out-Null  
+        }
+        if ($appsEnabled) {
+            New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $regValue -Type Dword -Force | Out-Null 
+        }
+    }
 }

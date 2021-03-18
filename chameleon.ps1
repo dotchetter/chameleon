@@ -3,22 +3,35 @@
     Chameleon - An automated bright / dark mode toggle
     service that follows the sun.
 
-    Author:
+    Authors:
         Simon Olofsson
         dotchetter@protonmail.ch
         https://github.com/dotchetter
 
+        Michael Hällström
+        https://github.com/yousernaym
+
     Date:
-        2021-03-07
+        2021-03-17
     
     Tray icon and main service file
 #>
 
 Import-Module .\helpers.ps1
+Import-Module .\settings.ps1
 
 [System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
 [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
 [System.Reflection.Assembly]::LoadWithPartialName('System.Drawing') | Out-Null
+
+$script:sunEnabled = $true
+$script:appsEnabled = $true
+$script:systemEnabled = $true
+$script:selectedTheme = [Themes]::sun
+
+# GUI test
+# showSettings
+# Stop-Process $pid
 
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
@@ -33,39 +46,33 @@ $systray_tool_icon.Text = "Chameleon"
 $systray_tool_icon.Icon = [System.Drawing.Icon]::FromHandle((new-object System.Drawing.Bitmap -argument $ims).GetHIcon())
 $systray_tool_icon.Visible = $true
 
-$menu_exit = New-Object System.Windows.Forms.MenuItem
+$menu_exit = New-Object System.Windows.Forms.ToolStripMenuItem
 $menu_exit.Text = "Kill Chameleon"
 
-$dark_mode_toggle = New-Object System.Windows.Forms.MenuItem
-$dark_mode_toggle.Text = "Toggle dark mode"
+$settingsMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
+$settingsMenuItem.Text = "Settings"
 
-$light_mode_toggle = New-Object System.Windows.Forms.MenuItem
-$light_mode_toggle.Text = "Toggle light mode"
-
-$sunup_info = New-Object System.Windows.Forms.MenuItem
-$sundown_info = New-Object System.Windows.Forms.MenuItem
+$sunup_info = New-Object System.Windows.Forms.ToolStripMenuItem
+$sundown_info = New-Object System.Windows.Forms.ToolStripMenuItem
 $sunup_info.Enabled = $false
 $sundown_info.Enabled = $false
 
-$systray_tool_icon.Contextmenu = New-Object System.Windows.Forms.ContextMenu
-$systray_tool_icon.Contextmenu.MenuItems.AddRange(@($sunup_info,
-                                                    $sundown_info,
-                                                    $dark_mode_toggle,
-                                                    $light_mode_toggle,
-                                                    $menu_exit))
+$systray_tool_icon.ContextMenuStrip = New-Object System.Windows.Forms.ContextMenuStrip
+$systray_tool_icon.ContextMenuStrip.Items.AddRange(@($sunup_info,
+    $sundown_info,
+    $settingsMenuItem,
+    $menu_exit))
+
+$systray_tool_icon.Add_DoubleClick({
+    showSettings
+})
 
 # Starts the daemon for sun hour data retrieval
 $chameleonDaemon = Start-Job -FilePath chameleond.ps1
 
-$light_mode_toggle.add_Click(
+$settingsMenuItem.add_Click(
     {
-        setRegistryValues 1
-    }
-)
-
-$dark_mode_toggle.add_Click(
-    {
-        setRegistryValues 0
+        showSettings
     }
 )
 
