@@ -88,3 +88,9 @@ function getTheme()
     return $theme
 }
 
+function showSettings
+{
+    initSettingsWindow
+    $script:settingsWindow.ShowDialog()
+}
+

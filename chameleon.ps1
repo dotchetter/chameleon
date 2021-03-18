@@ -30,8 +30,7 @@ $script:systemEnabled = $true
 $script:selectedTheme = [Themes]::sun
 
 # GUI test
-# initSettingsWindow
-# $script:settingsWindow.ShowDialog()
+# showSettings
 # Stop-Process $pid
 
 $location = getLocationFromWindows10LocationApi
@@ -64,13 +63,16 @@ $systray_tool_icon.ContextMenuStrip.Items.AddRange(@($sunup_info,
     $settingsMenuItem,
     $menu_exit))
 
+$systray_tool_icon.Add_DoubleClick({
+    showSettings
+})
+
 # Starts the daemon for sun hour data retrieval
 $chameleonDaemon = Start-Job -FilePath chameleond.ps1
 
 $settingsMenuItem.add_Click(
     {
-        initSettingsWindow
-        $script:settingsWindow.ShowDialog()
+        showSettings
     }
 )
 
