@@ -46,11 +46,18 @@ $systray_tool_icon.Text = "Chameleon"
 $systray_tool_icon.Icon = [System.Drawing.Icon]::FromHandle((new-object System.Drawing.Bitmap -argument $ims).GetHIcon())
 $systray_tool_icon.Visible = $true
 
-$menu_exit = New-Object System.Windows.Forms.ToolStripMenuItem
-$menu_exit.Text = "Kill Chameleon"
+$darkMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
+$darkMenuItem.Text = "Toggle dark mode"
+
+$lightMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
+$lightMenuItem.Text = "Toggle light mode"
+
 
 $settingsMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
 $settingsMenuItem.Text = "Settings"
+
+$menu_exit = New-Object System.Windows.Forms.ToolStripMenuItem
+$menu_exit.Text = "Kill Chameleon"
 
 $sunup_info = New-Object System.Windows.Forms.ToolStripMenuItem
 $sundown_info = New-Object System.Windows.Forms.ToolStripMenuItem
@@ -60,6 +67,8 @@ $sundown_info.Enabled = $false
 $systray_tool_icon.ContextMenuStrip = New-Object System.Windows.Forms.ContextMenuStrip
 $systray_tool_icon.ContextMenuStrip.Items.AddRange(@($sunup_info,
     $sundown_info,
+    $darkMenuItem,
+    $lightMenuItem,
     $settingsMenuItem,
     $menu_exit))
 
@@ -69,6 +78,18 @@ $systray_tool_icon.Add_DoubleClick({
 
 # Starts the daemon for sun hour data retrieval
 $chameleonDaemon = Start-Job -FilePath chameleond.ps1
+
+$darkMenuItem.add_Click(
+    {
+        [Themes]::dark | setTheme
+    }
+)
+
+$lightMenuItem.add_Click(
+    {
+        [Themes]::light | setTheme
+    }
+)
 
 $settingsMenuItem.add_Click(
     {
