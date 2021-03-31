@@ -18,11 +18,13 @@
 
 #>
 Import-Module .\helpers.ps1
+Import-Module .\Settings.ps1
 
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
 $previousCheck = Get-Date
 $sundataUpdatedTimestamp = Get-Date
+$settings = [Settings]::new()
 
 while (1)
 {
@@ -32,12 +34,17 @@ while (1)
         $sundata = getSunSetSunRiseDataFromPublicApi $location
     }
 
-    $script:sunTheme = evaluateBrightOrDarkmode $sundata
-
-    if ($previousTheme -ne $script:sunTheme)
+    $sunTheme = evaluateBrightOrDarkmode $sundata
+    Write-Output $sunTheme
+    
+    if (($previousTheme -ne $sunTheme))
     {
-        [Themes]::sun | setTheme
-        $previousTheme = $script:sunTheme
+        $settings = [Settings]::load()
+        if ($settings.sunEnabled())
+        {
+            $settings.setTheme($sunTheme)
+            $previousTheme = $sunTheme
+        }
     }
 
     Start-Sleep -Seconds ($INTERVAL_MINUTES * 60)

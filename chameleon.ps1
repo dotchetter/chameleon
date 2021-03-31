@@ -24,14 +24,8 @@ Import-Module .\settings.ps1
 [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
 [System.Reflection.Assembly]::LoadWithPartialName('System.Drawing') | Out-Null
 
-$script:sunEnabled = $true
-$script:appsEnabled = $true
-$script:systemEnabled = $true
-$script:selectedTheme = [Themes]::sun
-
-# GUI test
-# showSettings
-# Stop-Process $pid
+$settings = [Settings]::load()
+$settings.setTheme()
 
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
@@ -73,27 +67,27 @@ $systray_tool_icon.ContextMenuStrip.Items.AddRange(@($sunup_info,
     $menu_exit))
 
 $systray_tool_icon.Add_DoubleClick({
-    showSettings
+    showSettings $settings
 })
 
 # Starts the daemon for sun hour data retrieval
-$chameleonDaemon = Start-Job -FilePath chameleond.ps1
+$script:chameleonDaemon = Start-Job -FilePath chameleond.ps1
 
 $darkMenuItem.add_Click(
     {
-        [Themes]::dark | setTheme
+        setTheme [Themes]::dark
     }
 )
 
 $lightMenuItem.add_Click(
     {
-        [Themes]::light | setTheme
+        $settings.setTheme([Themes]::light)
     }
 )
 
 $settingsMenuItem.add_Click(
     {
-        showSettings
+        showSettings $settings
     }
 )
 

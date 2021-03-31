@@ -19,8 +19,8 @@
 #>
 
 $INTERVAL_MINUTES = 1
-enum Themes { light; dark; sun }
 Add-Type -AssemblyName System.Device
+enum Themes { light; dark; sun }
 
 function getLocationFromWindows10LocationApi()
 <# 
@@ -55,7 +55,6 @@ function getLocationFromWindows10LocationApi()
     } 
     return $GeoWatcher.Position.Location | Select-Object Latitude, Longitude
 }
-
 
 function getSunSetSunRiseDataFromPublicApi($locationData)
 <#
@@ -98,35 +97,5 @@ function evaluateBrightOrDarkmode($sundata)
     {
         $true { return [Themes]::light }
         $false { return [Themes]::dark}
-    }
-}
-
-function setTheme()
-{
-    param (
-    [parameter(ValueFromPipeline)]
-    [Themes]
-    $theme
-    )
-    if ($null -eq $theme) {
-        return
-    }
-    if (($theme -ne [Themes]::sun) -or $sunEnabled)
-    {
-        if ($theme -eq [Themes]::sun) {
-            $theme =  $script:sunTheme
-        }
-        if ($theme -eq [Themes]::light) {
-            $regValue = 1
-        }
-        else {
-            $regValue = 0
-        }
-        if ($systemEnabled) {
-            New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name SystemUsesLightTheme -Value $regValue -Type Dword -Force | Out-Null  
-        }
-        if ($appsEnabled) {
-            New-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize -Name AppsUseLightTheme -Value $regValue -Type Dword -Force | Out-Null 
-        }
     }
 }
