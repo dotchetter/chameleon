@@ -25,7 +25,12 @@ Import-Module .\settings.ps1
 [System.Reflection.Assembly]::LoadWithPartialName('System.Drawing') | Out-Null
 
 $settings = [Settings]::load()
-$settings.setTheme()
+
+#Set correct theme at startup only if automatic switching is disabled
+#Otherwise daemon would be accessed and may not be ready
+if ($settings.selectedTheme -ne [Themes]::sun) {
+    $settings.setTheme()
+}
 
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location

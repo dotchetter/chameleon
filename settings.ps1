@@ -120,7 +120,6 @@ function showSettings([PSCustomObject]$settings)
         $settings.save()
     })
 
-    Write-Host $settings.selectedTheme
     switch ($settings.selectedTheme) {
         dark { $useDarkRb.IsChecked = $true }
         light { $useLightRb.IsChecked = $true } 
