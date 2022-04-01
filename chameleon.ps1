@@ -3,35 +3,22 @@
     Chameleon - An automated bright / dark mode toggle
     service that follows the sun.
 
-    Authors:
+    Author:
         Simon Olofsson
         dotchetter@protonmail.ch
         https://github.com/dotchetter
 
-        Michael Hällström
-        https://github.com/yousernaym
-
     Date:
-        2021-03-17
+        2021-03-07
     
     Tray icon and main service file
 #>
 
 Import-Module .\helpers.ps1
-Import-Module .\settings.ps1
 
 [System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms') | Out-Null
 [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
 [System.Reflection.Assembly]::LoadWithPartialName('System.Drawing') | Out-Null
-
-$script:sunEnabled = $true
-$script:appsEnabled = $true
-$script:systemEnabled = $true
-$script:selectedTheme = [Themes]::sun
-
-# GUI test
-# showSettings
-# Stop-Process $pid
 
 $location = getLocationFromWindows10LocationApi
 $sundata = getSunSetSunRiseDataFromPublicApi $location
@@ -46,54 +33,39 @@ $systray_tool_icon.Text = "Chameleon"
 $systray_tool_icon.Icon = [System.Drawing.Icon]::FromHandle((new-object System.Drawing.Bitmap -argument $ims).GetHIcon())
 $systray_tool_icon.Visible = $true
 
-$darkMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$darkMenuItem.Text = "Toggle dark mode"
-
-$lightMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$lightMenuItem.Text = "Toggle light mode"
-
-
-$settingsMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$settingsMenuItem.Text = "Settings"
-
-$menu_exit = New-Object System.Windows.Forms.ToolStripMenuItem
+$menu_exit = New-Object System.Windows.Forms.MenuItem
 $menu_exit.Text = "Kill Chameleon"
 
-$sunup_info = New-Object System.Windows.Forms.ToolStripMenuItem
-$sundown_info = New-Object System.Windows.Forms.ToolStripMenuItem
+$dark_mode_toggle = New-Object System.Windows.Forms.MenuItem
+$dark_mode_toggle.Text = "Toggle dark mode"
+
+$light_mode_toggle = New-Object System.Windows.Forms.MenuItem
+$light_mode_toggle.Text = "Toggle light mode"
+
+$sunup_info = New-Object System.Windows.Forms.MenuItem
+$sundown_info = New-Object System.Windows.Forms.MenuItem
 $sunup_info.Enabled = $false
 $sundown_info.Enabled = $false
 
-$systray_tool_icon.ContextMenuStrip = New-Object System.Windows.Forms.ContextMenuStrip
-$systray_tool_icon.ContextMenuStrip.Items.AddRange(@($sunup_info,
-    $sundown_info,
-    $darkMenuItem,
-    $lightMenuItem,
-    $settingsMenuItem,
-    $menu_exit))
-
-$systray_tool_icon.Add_DoubleClick({
-    showSettings
-})
+$systray_tool_icon.Contextmenu = New-Object System.Windows.Forms.ContextMenu
+$systray_tool_icon.Contextmenu.MenuItems.AddRange(@($sunup_info,
+                                                    $sundown_info,
+                                                    $dark_mode_toggle,
+                                                    $light_mode_toggle,
+                                                    $menu_exit))
 
 # Starts the daemon for sun hour data retrieval
 $chameleonDaemon = Start-Job -FilePath chameleond.ps1
 
-$darkMenuItem.add_Click(
+$light_mode_toggle.add_Click(
     {
-        [Themes]::dark | setTheme
+        setRegistryValues 1
     }
 )
 
-$lightMenuItem.add_Click(
+$dark_mode_toggle.add_Click(
     {
-        [Themes]::light | setTheme
-    }
-)
-
-$settingsMenuItem.add_Click(
-    {
-        showSettings
+        setRegistryValues 0
     }
 )
 
@@ -103,17 +75,39 @@ $menu_exit.add_Click(
     }
 )
 
-$disclaimer = "Hey, thank's for checking out Chameleon! `n" +
-              "Chameleon uses location data in order to get " + 
+$disclaimer = "Chameleon uses location data in order to get " + 
               "accurate sun hour data for your location. Your " +
               "location is shared with 3rd parties during this " +
-              "transaction. By using Chameleon you agree to sharing " +
-              "your location."
+              "transaction. Do you agree to sharing your location? " +
+              "If not, you can close this window now."
 
-        [Windows.Forms.MessageBox]::show("$disclaimer", "Chameleon - Windows 10 Location API disclaimer",
-        [Windows.Forms.MessageBoxButtons]::Ok, [Windows.Forms.MessageBoxIcon]::"Information") | Out-Null
+function RunApp()
+{
+    $sunup_info.Text = "The sun rises at " + $sundata.sunrise
+    $sundown_info.Text = "The sun sets at " + $sundata.sunset
+    [void][System.Windows.Forms.Application]::Run()
+}
 
-$sunup_info.Text = "The sun rises at " + $sundata.sunrise
-$sundown_info.Text = "The sun sets at " + $sundata.sunset
-
-[void][System.Windows.Forms.Application]::Run()
+if ((Test-Path "$env:APPDATA\chameleon") -eq $false)
+{
+    $res = [Windows.Forms.MessageBox]::show(
+        $disclaimer,
+        [Windows.Forms.MessageBoxIcon]::"Information",
+        4
+   )
+   Write-host "RES:" $res
+   if ($res -eq 'Yes')
+   {
+        mkdir "$env:appdata\chameleon"
+        @{"location"=1} | ConvertTo-Json | Out-File "$env:appdata\chameleon\consent.json"
+        RunApp
+   }
+}
+else
+{
+    $consent = Get-Content $env:appdata\chameleon\consent.json | ConvertFrom-json
+    if ($consent.location -eq 1)
+    {
+        RunApp
+    }
+}
