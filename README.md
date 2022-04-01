@@ -13,7 +13,7 @@ on the Chameleon icon in your taskbar.
 ![unknown](https://user-images.githubusercontent.com/36161882/111232969-68aee300-85ec-11eb-8ac7-fba953a9f807.png)
 
 ### Installation
-* Download the latest release here: https://github.com/dotchetter/chameleon/archive/refs/heads/main.zip
+* Download the latest release here: https://github.com/dotchetter/chameleon/releases/download/1.1.0/chameleon_win10_64.zip
 * Open a PowerShell terminal as Admin and set the ExecutionPolicy to 'bypass': `Set-ExecutionPolicy Bypass`
 * Double klick **Chameleon.exe**
 * **Note:** Chameleon.exe **must** reside in it's original folder to work - either that, or move the associated .ps1 files along.
