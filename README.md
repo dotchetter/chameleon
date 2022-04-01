@@ -13,9 +13,11 @@ on the Chameleon icon in your taskbar.
 ![unknown](https://user-images.githubusercontent.com/36161882/111232969-68aee300-85ec-11eb-8ac7-fba953a9f807.png)
 
 ### Installation
-* Download the latest release here: https://github.com/dotchetter/chameleon/releases/download/1.0.0/chameleon.zip
+* Download the latest release here: https://github.com/dotchetter/chameleon/archive/refs/heads/main.zip
+* Open a PowerShell terminal as Admin and set the ExecutionPolicy to 'bypass': `Set-ExecutionPolicy Bypass`
 * Double klick **Chameleon.exe**
 * **Note:** Chameleon.exe **must** reside in it's original folder to work - either that, or move the associated .ps1 files along.
+* Use the Windows scheduler to start Chameleon when the computer starts for a seamless experience.
 
 ### Disclaimers
 Location data is shared with 3rd parties when using Chameleon. Upon starting the program you're consenting to this fact by using the software.
